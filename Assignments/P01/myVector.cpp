@@ -31,6 +31,7 @@ void myVector::printExisting() {
 
 //add a variable to the array
 void myVector::push(int i) {
+	//if pushing onto a full array
 	if (nextEmpty > arraySize) {
 		theVector = expandArray();
 	}
@@ -49,6 +50,7 @@ int myVector::pop() {
 	nextEmpty--;
 	int popvalue = theVector[nextEmpty];
 	theVector[nextEmpty] = 0;
+	//if we need to shrink it
 	if (((nextEmpty - 1) / (double)arraySize) <= 0.4 && arraySize>originalSize)
 	{
 		theVector = shrinkArray();

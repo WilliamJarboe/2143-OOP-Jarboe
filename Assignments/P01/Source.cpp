@@ -9,8 +9,11 @@ int main() {
 	w.pop();
 
 	//push 3 specified values
+	cout << "pushing 13" << endl;
 	w.push(13);
+	cout << "pushing 31" << endl;
 	w.push(31);
+	cout << "pushing 73" << endl;
 	w.push(73);
 
 	//add 10000 values to vector
@@ -19,8 +22,6 @@ int main() {
 	}
 	//print size of memory allocated
 	cout << w.getMemory() << endl;
-	//print number of values in vector
-	cout << w.getCount() << endl;
 
 	//remove 9998 items from vector
 	for (int i = 0; i < 9998; i++) {
@@ -28,8 +29,6 @@ int main() {
 	}
 	//print size of memory allocated
 	cout << w.getMemory() << endl;
-	//print number of values in vector
-	cout << w.getCount() << endl;
 
 	//print values in the vector
 	w.printExisting();
