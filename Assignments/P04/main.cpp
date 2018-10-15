@@ -226,7 +226,7 @@ void GameOfLife::printToFile(std::ofstream & outfile)
 			//booleans print as if they were 0's and 1's
 			outfile << thegame[i][j].alive;
 		}
-		outfile << std::endl;
+		outfile << "\n";
 	}
 }
 
