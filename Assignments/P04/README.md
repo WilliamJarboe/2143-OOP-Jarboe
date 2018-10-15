@@ -9,3 +9,7 @@ The universe of the Game of Life is an infinite, two-dimensional orthogonal grid
 - Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
 
 This specific input file features several still lifes forming from a chaotic start from the bottom of the screen all while a large 60 frame cycle occurrs in the middle
+
+
+
+###### if this program does not work i urge you to run it again without changing anything
