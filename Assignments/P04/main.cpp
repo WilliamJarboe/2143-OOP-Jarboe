@@ -12,7 +12,7 @@
 
 using namespace sf;
 
-const int MSPERFRAME = 5;
+const int FRAMERATE = 1;
 
 struct GOLCell {
 	bool isAlive;
@@ -43,8 +43,8 @@ struct GameOfLife {
 	int w;
 	int h;
 	int iterations;
-	int arrayRow;
-	int arrayColumn;
+	int selectedR;
+	int selectedC;
 
 	//game of life stuff
 	GOLCell** World;
@@ -53,10 +53,10 @@ struct GameOfLife {
 	//constructor
 	GameOfLife(int width, int height) {
 
-		w = width+1;
-		h = height+1;
+		w = width + 1;
+		h = height + 1;
 
-		Window.create(VideoMode(w*10, h*10), "Game of Life! remixed by William Jarboe");
+		Window.create(VideoMode(w * 10, h * 10), "Game of Life! remixed by William Jarboe");
 		World = new GOLCell*[w];
 		for (int i = 0; i < w; i++) {
 			World[i] = new GOLCell[h];
@@ -67,7 +67,7 @@ struct GameOfLife {
 	}
 	void drawWorld();
 	void osmoseData(std::ifstream&infile);
-	int checkNeighbors(int i, int j);
+	int countAdjacent(int i, int j);
 	void updateWorld();
 	void printWorld(std::ofstream & outfile);
 };
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 	int numberofIterations = std::stoi(argv[3]);
 
 	//create GOL
-	GameOfLife Gol(50,40);
+	GameOfLife Gol(50, 40);
 	Gol.iterations = 1;
 
 	//print header
@@ -103,8 +103,8 @@ int main(int argc, char **argv) {
 
 		//implementation of the thread sleep method
 		//i first used this method 4 years ago in java
-		std::this_thread::sleep_for(std::chrono::milliseconds(MSPERFRAME));
-		
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
 		std::cout << "\nIteration count: " << Gol.iterations;
 		Gol.iterations++;
 	}
@@ -115,105 +115,106 @@ int main(int argc, char **argv) {
 	outfile.close();
 	return 0;
 }
-
-	void GameOfLife::drawWorld() {
-		Window.clear();
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				if (World[i][j].isAlive) {
-					Window.draw(World[j][i].Rect);
-				}
+//render the world using sfml
+void GameOfLife::drawWorld() {
+	Window.clear();
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (World[i][j].isAlive) {
+				Window.draw(World[j][i].Rect);
 			}
 		}
-		Window.display();
 	}
+	Window.display();
+}
 
-	
-	void GameOfLife::osmoseData(std::ifstream& infile) {
-		std::string line = "";
-		infile >> arrayRow >> arrayColumn;
+//read all the data in from the input file
+void GameOfLife::osmoseData(std::ifstream& infile) {
+	std::string line = "";
+	//values for the width and height
+	infile >> selectedR >> selectedC;
+	//2d array traversal
+	for (int i = 0; i < selectedR; i++) {
+		infile >> line;
 
-		for (int i = 0; i < arrayRow; i++) {
-			infile >> line;
+		for (int j = 0; j < selectedC; j++)
+			// -48 for ascii offset
+			World[i][j].isAlive = line[j] - 48;
+	}
+}
 
-			for (int j = 0; j < arrayColumn; j++)
-				// -48 for ascii offset
-				World[i][j].isAlive = line[j] - 48;
+//count the number of adjacents
+//params: int i, int j
+int GameOfLife::countAdjacent(int i, int j) {
+	int neighbors = 0;
+	//count number of neighbors using relative coordinates for this cell
+	for (int ry = j - 1, rx = i - 1; rx <= i + 1; rx++) {
+		if (rx >= 0 && rx < h && ry >= 0 && ry < w) {
+			if (World[rx][ry].isAlive)
+				neighbors += 1;
 		}
 	}
+	for (int ry = j + 1, rx = i - 1; rx <= i + 1; rx++) {
+		if (rx >= 0 && rx < h && ry >= 0 && ry < w) {
+			if (World[rx][ry].isAlive)
+				neighbors += 1;
+		}
 
-
-	int GameOfLife::checkNeighbors(int i, int j) {
-		int neighbors = 0;
-			for (int ry = j - 1, rx = i - 1; rx <= i + 1; rx++) {
-				if (rx >= 0 && rx < h && ry >= 0 && ry < w) {
-					if (World[rx][ry].isAlive)
-						neighbors += 1;
-				}
-			}
-			for (int ry = j + 1, rx = i - 1; rx <= i + 1; rx++) {
-				if (rx >= 0 && rx < h && ry >= 0 && ry < w) {
-					if (World[rx][ry].isAlive)
-						neighbors += 1;
-				}
-
-			}
-			for (int ry = j, rx = i - 1; rx <= i + 1; rx++) {
-				if (rx >= 0 && rx < h && ry >= 0 && ry < w && rx != i) {
-					if (World[rx][ry].isAlive)
-						neighbors += 1;
-				}
-			}
-			return neighbors;
 	}
+	for (int ry = j, rx = i - 1; rx <= i + 1; rx++) {
+		if (rx >= 0 && rx < h && ry >= 0 && ry < w && rx != i) {
+			if (World[rx][ry].isAlive)
+				neighbors += 1;
+		}
+	}
+	return neighbors;
+}
 
-	/*cycles through a single update
-	*-
-	*/
-	void GameOfLife::updateWorld() {
-		int neighbors = 0;
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				neighbors = checkNeighbors(i,j);
-				if (World[i][j].isAlive) {
-					if (neighbors < 2 || neighbors>3) {
-						World[i][j].nextState = false;
-					}
+//cycles through a single update
+void GameOfLife::updateWorld() {
+	int neighbors = 0;
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			neighbors = countAdjacent(i, j);
+			if (World[i][j].isAlive) {
+				if (neighbors < 2 || neighbors>3) {
+					World[i][j].nextState = false;
+				}
+			}
+			else {
+
+				if (neighbors == 3) {
+					World[i][j].nextState = true;
 				}
 				else {
-					
-					if (neighbors == 3) {
-						World[i][j].nextState = true;
-					}
-					else {
-						World[i][j].nextState = false;
-					}
+					World[i][j].nextState = false;
 				}
 			}
 		}
-		for (int i = 0; i < h; i++)
-		{
-			for (int j = 0; j < w; j++)
-			{
-				World[i][j].isAlive = World[i][j].nextState;
-			}
-		}
 	}
-
-	/*prints the whole world to the output file specified
-	*-param: std::ofstream
-	*-return: void
-	*/
-	void GameOfLife::printWorld(std::ofstream & outfile)
+	for (int i = 0; i < h; i++)
 	{
-		for (int i = 0; i < w; i++)
+		for (int j = 0; j < w; j++)
 		{
-			for (int j = 0; j < h; j++)
-			{
-				//booleans print as if they were 0's and 1's
-				outfile << World[i][j].isAlive;
-			}
-			outfile << std::endl;
+			World[i][j].isAlive = World[i][j].nextState;
 		}
 	}
+}
+
+/*prints the whole world to the output file specified
+*-param: std::ofstream
+*-return: void
+*/
+void GameOfLife::printWorld(std::ofstream & outfile)
+{
+	for (int i = 0; i < w; i++)
+	{
+		for (int j = 0; j < h; j++)
+		{
+			//booleans print as if they were 0's and 1's
+			outfile << World[i][j].isAlive;
+		}
+		outfile << std::endl;
+	}
+}
 
