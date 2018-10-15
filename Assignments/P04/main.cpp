@@ -12,7 +12,7 @@
 
 using namespace sf;
 
-const int FRAMERATE = 1;
+const int MSPERFRAME = 5;
 
 struct GOLCell {
 	bool isAlive;
@@ -29,7 +29,7 @@ struct GOLCell {
 		Rect.setSize(sf::Vector2f(w, h));
 		Rect.setFillColor(Color::Blue);
 		Rect.setOutlineColor(Color::Black);
-		Rect.setOutlineThickness(1);
+		Rect.setOutlineThickness(2);
 		isAlive = 0;
 	}
 
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 
 		//implementation of the thread sleep method
 		//i first used this method 4 years ago in java
-		std::this_thread::sleep_for(std::chrono::milliseconds(32));
+		std::this_thread::sleep_for(std::chrono::milliseconds(MSPERFRAME));
 		
 		std::cout << "\nIteration count: " << Gol.iterations;
 		Gol.iterations++;
