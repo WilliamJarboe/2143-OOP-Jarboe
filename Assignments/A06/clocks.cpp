@@ -24,66 +24,7 @@ private:
 	//y velocity
 	int yVel;
 };
-
-
-//Essentially, what this class does is it keeps track of the Clock's start and end for it.
-//It doesn't do any of the actual counting. It also doesn't interact with SFML really.
-class Counter {
-private:
-	sf::Clock clock;
-	sf::Time begin;
-	sf::Time end;
-	sf::Time elapsed;
-	int x,y;
-public:
-	//default constructor
-	Counter() {
-		begin = sf::seconds(0);
-		end = sf::seconds(0);
-	}
-	//start and end params
-	Counter(int start, int endd) {
-		begin = sf::seconds(start);
-		end = sf::seconds(endd);
-	}
-	//start counter, make it infinite
-	Counter(int start) {
-		begin = sf::seconds(start);
-		end = sf::seconds(9999999);
-	}
-	//You should never have to use this
-	//Changes the end of the timer.
-	void setEnd(int newEnding)
-	{
-		end = sf::seconds(newEnding);
-	}
-	//You should never have to use this
-	//changes the start of the timer.
-	void setBeginTime(int x)
-	{
-		begin = sf::seconds(x);
-	}
-
-	//returns ending time as an integer
-	int getEnd()
-	{
-		return end.asSeconds();
-	}
-	//Returns elapsed time as integer
-	int getElapsed() {
-		return round(clock.getElapsedTime().asSeconds());
-	}
-	//returns the starting time
-	int getStart() {
-		return begin.asSeconds();
-	}
-	void setPosition(int x, int y) {
-		setPosition(x, y);
-	}
-};
-
-
-
+//Clock that keeps track of time, and utilizes SFML
 class Clock : public sf::Text {
 private:
 	Counter ref;//needs to keep track of eachother
@@ -221,6 +162,61 @@ public:
 		setPosition(x,y);
 	}
 };
+
+//Essentially, what this class does is it keeps track of the Clock's start and end for it.
+//It doesn't do any of the actual counting. It also doesn't interact with SFML really.
+class Counter {
+private:
+	//clock to use for keeping track of time elapsed.
+	sf::Clock clock;
+	//beginning time, in seconds.
+	sf::Time sbegin;
+	//ending time, in seconds.
+	sf::Time send;
+public:
+	//default constructor
+	Counter() {
+		sbegin = sf::seconds(0);
+		send = sf::seconds(0);
+	}
+	//start and end params
+	Counter(int start, int endd) {
+		sbegin = sf::seconds(start);
+		send = sf::seconds(endd);
+	}
+	//start counter, make it infinite
+	Counter(int start) {
+		sbegin = sf::seconds(start);
+		send = sf::seconds(9999999);
+	}
+	//You should never have to use this
+	//Changes the end of the timer.
+	void setEnd(int newEnding)
+	{
+		send = sf::seconds(newEnding);
+	}
+	//You should never have to use this
+	//changes the start of the timer.
+	void setBeginTime(int x)
+	{
+		sbegin = sf::seconds(x);
+	}
+
+	//returns ending time as an integer
+	int getEnd()
+	{
+		return send.asSeconds();
+	}
+	//Returns elapsed time as integer
+	int getElapsed() {
+		return round(clock.getElapsedTime().asSeconds());
+	}
+	//returns the starting time
+	int getStart() {
+		return sbegin.asSeconds();
+	}
+};
+
 //Driver loop
 int main()
 {
@@ -237,7 +233,10 @@ int main()
 	//me and evan had a study group together
 	while (window.isOpen())
 	{
+		//since it thinks it's static, i have to
+		//make it think it still is static by changing it.
 		giantGroup.push_back(BG);
+		//be wary of draw order
 		giantGroup.push_back(clock1);
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -245,6 +244,7 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+		//be wary of order
 		window.clear();
 		window.draw(giantGroup);
 		window.display();
