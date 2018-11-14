@@ -8,28 +8,12 @@
 
 using namespace std;
 
-//groups everything together
-class MegaGrouper : public Group {
-private:
-	//x coord
-	int x;
-	//y coord
-	int y;
-	//width
-	int w;
-	//height
-	int h;
-	//x velocity
-	int xVel;
-	//y velocity
-	int yVel;
-};
 //Clock that keeps track of time, and utilizes SFML
 class Clock : public sf::Text {
 private:
 	Counter ref;//needs to keep track of eachother
-	//SFML stuff!!!
-	//speed in x and y axis
+				//SFML stuff!!!
+				//speed in x and y axis
 	int xVel, yVel;
 	float w, h;
 	//size to draw in
@@ -59,25 +43,22 @@ public:
 		yVel = .024;
 		setPosition(200, 200);
 		setOrigin(getLocalBounds().width / 2, getLocalBounds().height / 2);
-		
+
 
 	}
 
 	void shiftClock()
 	{
 		//update clock time
-		setString("" + (ref.getStart() - ref.getElapsed()));
+		setString("" + (ref.getStart() + ref.getElapsed()));
 		//shift the clock
-		move(xVel, yVel);
-		//collision with wall detection
-		if (getPosition().x +
-			(getLocalBounds().width / 2) >= 600 ||
-			getPosition().x - ((getLocalBounds().width) / 2) <= 0)
-			xVel = -1 * xVel;
-		if (getPosition().y +
-			(getLocalBounds().height / 2) >= 400 ||
-			getPosition().y - ((getLocalBounds().height) / 2) <= 0)
+		int xpos = getPosition().x;
+		int ypos = getPosition().y;
+		if (xpos + (w / 2) >= 600 || xpos - (w / 2) <= 0)
+			xVel = -1 * yVel;
+		if (ypos + (h / 2) >= 400 || ypos - (h / 2) <= 0)
 			yVel = -1 * yVel;
+		move(xVel, yVel);
 	}
 	//changes the Textcoor of the clock (requirements)
 	void setTextColor(sf::Color newTextcolor) {
@@ -131,7 +112,7 @@ public:
 		xVel = .024;
 		yVel = .024;
 		//someone needs to write an int version
-		setSize(sf::Vector2f(w,h));
+		setSize(sf::Vector2f(w, h));
 		//color settings
 		setFillColor(sf::Color::Black);
 		setOutlineColor(sf::Color::Magenta);
@@ -143,11 +124,11 @@ public:
 		//We're a background. we don't need to edit our text.
 		int xpos = getPosition().x;
 		int ypos = getPosition().y;
-		if (xpos+(w/2)>=600||xpos-(w/2)<=0)
-			xVel=-1*yVel;
-		if (ypos+(h/2)>=400||ypos-(h/2)<=0)
-			yVel=-1*yVel;
-		move(xVel,yVel);
+		if (xpos + (w / 2) >= 600 || xpos - (w / 2) <= 0)
+			xVel = -1 * yVel;
+		if (ypos + (h / 2) >= 400 || ypos - (h / 2) <= 0)
+			yVel = -1 * yVel;
+		move(xVel, yVel);
 	}
 	//edit function for background fill color (requirements)
 	void setBGColor(sf::Color newColor) {
@@ -159,7 +140,7 @@ public:
 	}
 	//edit position (requirements)
 	void setPosition(int x, int y) {
-		setPosition(x,y);
+		setPosition(x, y);
 	}
 };
 
@@ -220,7 +201,7 @@ public:
 //Driver loop
 int main()
 {
-	MegaGrouper giantGroup;
+	Group giantGroup;
 	Clock clock1;
 	//set clock time
 	clock1.setTimetoInfinite(0);
@@ -253,6 +234,6 @@ int main()
 		clock1.shiftClock();
 	}
 
-	//system("pause");
+	//NORMALLY close files... but nothing to close.
 	return 0;
 }
