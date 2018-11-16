@@ -76,9 +76,11 @@ public:
 	
 	Clock() {
 		//Out-blocked in the world of blocky letters!
-		if (!font.loadFromFile("imagine_font.otf"))
-			std::cout << "Could not find font\n";
+		if (!font.loadFromFile("imagine_font.otf")) {
+			std::cout << "font error\n";
+		}
 		setFont(font);
+		//set default properties of the clock...
 		setString("FDEF now presents: H");
 		setCharacterSize(18);
 		setFillColor(sf::Color::Cyan);
@@ -91,22 +93,21 @@ public:
 		
 	}
 
-
+	//resets the clock
 	void setTime(int x, int y) {
 		c.setStart(x);
 		c.setEnd(y);
-		if (x > y)
+		if (x > y) {
 			increasing = false;
-		else if (x == y)
-			setString("");
-
+		}
 		setOrigin(0,0);
 	}
 
 	//Changes the font to the specified filepath
 	void newFont(string filepath) {
-		if (!font.loadFromFile(filepath))
-			std::cout << "Could not find font\n";
+		if (!font.loadFromFile(filepath)) {
+			std::cout << "font error\n";
+		}
 		setFont(font);
 		setOrigin(0,0);
 	}
@@ -149,11 +150,11 @@ public:
 		setColor(sf::Color(x, y, z));
 	}
 };
-	
+
+//My class!
 class ScreensaverClock : public Group {
 private:
-	float width;
-	float height;
+	//keeps track of the speed of the group
 	float xVel;
 	float yVel;
 public:
@@ -161,24 +162,29 @@ public:
 	sf::RectangleShape box;
 	ScreensaverClock()
 	{
-		
+		//used only in constructor...no need to save to class.
+		float width, height;
+		//set the default time of the clock
 		clock.setTime(0, 100);
 		box = sf::RectangleShape();
-
+		//hardcoding these resolved a LOT OF ISSUES...
 		width = 57;
 		height = 29;
+		//initialize all the basic properties of the background box
 		box.setSize(sf::Vector2f(width, height));
 		box.setOrigin(width / 2, height / 2);
 		box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(sf::Color::Cyan);
 		box.setOutlineThickness(2);
 		box.setPosition(50, 50);
+		//put the clocko n top of the box
 		clock.setPosition(box.getPosition().x-5, box.getPosition().y-10);
 
 		xVel = -0.124;
 		yVel = 0.062;
-
+		//add the box to be drawn first
 		push_back(box);
+		//...and the clock on top of it
 		push_back(clock);
 	}
 
@@ -239,19 +245,19 @@ int main()
 	ScreensaverClock A;
 	ScreensaverClock B;
 	ScreensaverClock C;
-	
+	//test case 1
 	A.setClockFont("Segment7Standard.otf");
 	A.setClockColor(sf::Color::Magenta);
 	A.setBorderColor(sf::Color::Blue);
 	A.setVelocity(0.04, 0.05);
 	A.setClockTime(80, 30);
-	
+	//test case 2
 	B.setClockFont("Open 24 Display St.ttf");
 	B.setClockColor(sf::Color::Green);
 	B.setBorderColor(sf::Color::Red);
 	B.setVelocity(0.08, -0.14);
 	B.setClockTime(30, 45);
-
+	//test case 3
 	C.setClockFont("imagine_font.otf");
 	C.setClockColor(sf::Color::Yellow);
 	C.setBorderColor(sf::Color::White);
