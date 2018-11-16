@@ -1,7 +1,6 @@
 //CMPS2143
 //william jarboe
 //bouncing clocks
-#pragma warning(disable : 4996)
 #include <SFML/Graphics.hpp>
 #include "Group.h"
 
