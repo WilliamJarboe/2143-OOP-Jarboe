@@ -60,3 +60,4 @@ int main()
 ###### Dynamic Binding:
 * In dynamic binding, the code to be executed in response to function call is decided at runtime.
 * C++ has virtual functions to support this.
+
